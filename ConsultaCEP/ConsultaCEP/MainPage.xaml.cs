@@ -9,8 +9,6 @@ using Xamarin.Forms;
 
 namespace ConsultaCEP
 {
-    // Learn more about making custom code visible in the Xamarin.Forms previewer
-    // by visiting https://aka.ms/xamarinforms-previewer
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
@@ -23,14 +21,51 @@ namespace ConsultaCEP
 
         private void BuscarCEP(object sender, EventArgs args)
         {
-            //TO DO - Lógica do programa
-
             //Validações.
             string cep = CEP.Text.Trim(); //trim removo todo espaço do inicio e fim caso seja espaço em branco(vazio)
-            //chama o metodo direto porque criamos um metodo static
-            Endereco end = ViaCEPServico.BuscarEnderecoViaCEP(cep);
 
-            RESULTADO.Text = string.Format("Endereço: {2} Bairro: {3} - {0}, {1}", end.localidade, end.uf, end.logradouro, end.bairro);
+            if (isValidCEP(cep))
+            {
+                try
+                {
+                    //chama o metodo direto porque criamos um metodo static
+                    Endereco end = ViaCEPServico.BuscarEnderecoViaCEP(cep);
+                    if (end != null)
+                    {
+                        RESULTADO.Text = string.Format("Endereço: {2} Bairro: {3} - {0}, {1}", end.localidade, end.uf, end.logradouro, end.bairro);
+                    }
+                    else
+                    {
+                        DisplayAlert("ERRO", "O endereço não foi encontrado para o CEP informado: " + cep, "OK");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DisplayAlert("ERRO CRÍTICO", ex.Message, "OK");
+                }
+
+            }
+        }
+
+        private bool isValidCEP(string cep)
+        {
+            bool valido = true;
+
+            if (cep.Length != 8)
+            {
+                DisplayAlert("ERRO", "CEP inválido! O CEP deve conter 8 caracteres.", "OK");
+                valido = false;
+            }
+
+            int NovoCEP = 0;
+
+            if (!int.TryParse(cep, out NovoCEP))
+            {
+                DisplayAlert("ERRO", "CEP inválido! O CEP deve ser composto apenas por números.", "OK");
+                valido = false;
+            }
+
+            return valido;
         }
     }
 }

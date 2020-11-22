@@ -20,6 +20,8 @@ namespace ConsultaCEP.Servico.Modelo
             //deserealizando esse json conteudo em um objeto do tipo endereço
             Endereco end = JsonConvert.DeserializeObject<Endereco>(Conteudo);
 
+            if (end.cep == null) return null;
+
             return end;
         }
     }
